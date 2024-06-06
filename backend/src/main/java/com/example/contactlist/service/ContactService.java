@@ -1,18 +1,19 @@
 package com.example.contactlist.service;
 
+import com.example.contactlist.dto.ContactDTO;
 import com.example.contactlist.entity.Contact;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface ContactService {
 
-    public Page<Contact> getAllContacts(int page, int size);
+    Page<ContactDTO> getAllContacts(int page, int size);
 
-    public Contact  getContact(String id);
+    ContactDTO  getContact(String id);
 
-    public Contact  createContact(Contact contact);
+    ContactDTO  createContact(ContactDTO contactDTO);
 
-    public void deleteContact(Contact contact);
+    void deleteContact(Contact contact);
 
-    public String uploadPhoto(String id, MultipartFile file);
+    String uploadPhoto(String id, MultipartFile file);
 }

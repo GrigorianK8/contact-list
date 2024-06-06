@@ -1,6 +1,6 @@
 package com.example.contactlist.endpoint;
 
-import com.example.contactlist.entity.Contact;
+import com.example.contactlist.dto.ContactDTO;
 import com.example.contactlist.service.ContactService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -26,19 +26,19 @@ public class ContactEndpoint {
     private final ContactService contactService;
 
     @PostMapping
-    public ResponseEntity<Contact> createContact(@RequestBody Contact contact) {
-        //return ResponseEntity.ok().body(contactService.createContact(contact));
-        return ResponseEntity.created(URI.create("/contacts/userID")).body(contactService.createContact(contact));
+    public ResponseEntity<ContactDTO> createContact(@RequestBody ContactDTO contactDTO) {
+        return ResponseEntity.created(URI.create("/contacts/" + contactDTO.getId()))
+                .body(contactService.createContact(contactDTO));
     }
 
     @GetMapping
-    public ResponseEntity<Page<Contact>> getContacts(@RequestParam(value = "page", defaultValue = "0") int page,
-                                                     @RequestParam(value = "size", defaultValue = "10") int size) {
+    public ResponseEntity<Page<ContactDTO>> getContacts(@RequestParam(value = "page", defaultValue = "0") int page,
+                                                        @RequestParam(value = "size", defaultValue = "10") int size) {
         return ResponseEntity.ok().body(contactService.getAllContacts(page, size));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Contact> getContact(@PathVariable(value = "id") String id) {
+    public ResponseEntity<ContactDTO> getContact(@PathVariable(value = "id") String id) {
         return ResponseEntity.ok().body(contactService.getContact(id));
     }
 

@@ -1,6 +1,8 @@
 package com.example.contactlist.service.impl;
 
+import com.example.contactlist.dto.ContactDTO;
 import com.example.contactlist.entity.Contact;
+import com.example.contactlist.mapper.ContactMapper;
 import com.example.contactlist.repository.ContactRepository;
 import com.example.contactlist.service.ContactService;
 import jakarta.transaction.Transactional;
@@ -31,36 +33,46 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 public class ContactServiceImpl implements ContactService {
 
     private final ContactRepository contactRepository;
+    private final ContactMapper contactMapper;
 
 
     @Override
-    public Page<Contact> getAllContacts(int page, int size) {
-        return contactRepository.findAll(PageRequest.of(page, size, Sort.by("name")));
+    public Page<ContactDTO> getAllContacts(int page, int size) {
+        log.info("Getting all contacts: page{}, size{}", page, size);
+        Page<Contact> contacts = contactRepository.findAll(PageRequest.of(page, size, Sort.by("name")));
+        return contacts.map(contactMapper::toDTO);
     }
 
     @Override
-    public Contact getContact(String id) {
-        return contactRepository.findById(id).orElseThrow(() -> new RuntimeException("Contact not found"));
+    public ContactDTO getContact(String id) {
+        log.info("Getting contact by ID: {}", id);
+        Contact contact = contactRepository.findById(id).orElseThrow(() -> new RuntimeException("Contact not found"));
+        return contactMapper.toDTO(contact);
     }
 
     @Override
-    public Contact createContact(Contact contact) {
-        return contactRepository.save(contact);
+    public ContactDTO createContact(ContactDTO contactDTO) {
+        log.info("Creating contact: {}", contactDTO);
+        Contact contact = contactMapper.toEntity(contactDTO);
+        Contact saveContact = contactRepository.save(contact);
+        return contactMapper.toDTO(saveContact);
     }
 
     @Override
     public void deleteContact(Contact contact) {
-        // Assignment
+        log.info("Deleting contact: {}", contact);
+        contactRepository.delete(contact);
+        log.info("Contact deleted successfully: {}", contact);
     }
 
     @Override
     public String uploadPhoto(String id, MultipartFile file) {
         log.info("Saving picture for user ID: {}", id);
-
-        Contact contact = getContact(id);
+        ContactDTO contact = getContact(id);
         String photoUrl = photoFunction.apply(id, file);
         contact.setPhotoUrl(photoUrl);
-        contactRepository.save(contact);
+        Contact saveContact = contactMapper.toEntity(contact);
+        contactRepository.save(saveContact);
 
         return photoUrl;
     }
