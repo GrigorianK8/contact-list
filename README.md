@@ -48,5 +48,5 @@ Visual Studio Code is a lightweight but powerful source code editor from Microso
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/yourusername/contact-list.git
+   git clone https://github.com/GrigorianK8/contact-list.git
    cd contact-list
